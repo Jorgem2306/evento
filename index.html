@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>100 Gamers Dijeron</title>
+    <style>
+        /* COLORES CON TEMA ROSADO/MORADO */
+        :root {
+            --fondo-principal: #FADADD; /* Rosa muy claro */
+            --caja-principal: #FFC0CB;  /* Rosa */
+            --rosa-brillante: #FF69B4;  /* Rosa brillante */
+            --morado-oscuro: #8A2BE2;   /* Morado */
+            --blanco-texto: #FFFFFF;    /* Blanco */
+            --texto-oscuro: #333333;    /* Gris oscuro para contraste */
+            --rosa-oscuro-boton: #E0607E; /* Nuevo color para el botón de siguiente */
+            --fallo-color: #E74C3C;     /* Rojo para los fallos */
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--fondo-principal);
+            color: var(--texto-oscuro);
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: var(--caja-principal);
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ESTILO Y ANIMACIÓN DE SALTO PARA EL TÍTULO DE LA PREGUNTA */
+        h1 {
+            font-size: 3.2em;
+            color: var(--blanco-texto);
+            margin-bottom: 30px;
+            animation: textJump 1s ease-in-out infinite alternate;
+            position: relative;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 
+                -2px 2px 0 var(--rosa-brillante),
+                -4px 4px 0 var(--rosa-brillante),
+                -6px 6px 0 var(--rosa-brillante),
+                -8px 8px 0 var(--rosa-brillante),
+                -10px 10px 0 var(--rosa-brillante);
+        }
+
+        @keyframes textJump {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-5px);
+            }
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--morado-oscuro);
+            margin-bottom: 15px;
+        }
+
+        /* ESTILO PARA LAS RESPUESTAS EN FORMA DE BURBUJA/REDONDA */
+        .respuesta {
+            background-color: var(--morado-oscuro);
+            color: var(--blanco-texto);
+            padding: 18px;
+            margin: 12px auto;
+            width: 80%;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .respuesta:hover {
+            background-color: #6A1BAA;
+            transform: translateY(-3px);
+        }
+
+        .respuesta.visible {
+            background-color: var(--rosa-brillante);
+            color: var(--blanco-texto);
+        }
+
+        .respuesta .contenido-visible {
+            visibility: hidden;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .respuesta .contenido-tapa {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .respuesta.visible .contenido-visible {
+            visibility: visible;
+        }
+
+        .respuesta.visible .contenido-tapa {
+            display: none;
+        }
+
+        /* QUITAMOS EL CUADRO DE LOS FALLOS Y SOLO DEJAMOS LAS X */
+        .fallos-container {
+            margin-top: 40px;
+            padding: 0;
+            background-color: transparent;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        #fallos {
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .fallo {
+            color: var(--fallo-color);
+            font-size: 3.5em;
+            font-weight: bold;
+            margin: 0 10px;
+            animation: fadeIn 0.5s ease-out;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.3em;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+        
+        #boton-fallo {
+            background-color: var(--morado-oscuro);
+            color: var(--blanco-texto);
+        }
+
+        #boton-fallo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        #boton-siguiente {
+            background-color: var(--rosa-oscuro-boton);
+            color: var(--blanco-texto);
+        }
+
+        #boton-siguiente:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animación para el cambio de preguntas */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .fade-in {
+            opacity: 1;
+            transition: opacity 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="game-container">
+        <h1 id="pregunta"></h1>
+        
+        <div id="respuestas-container">
+        </div>
+
+        <div class="fallos-container">
+            <h2>Fallos:</h2>
+            <div id="fallos">
+            </div>
+        </div>
+        
+        <div class="buttons-container">
+            <button id="boton-fallo">Marcar Fallo</button>
+            <button id="boton-siguiente">Siguiente Pregunta</button>
+        </div>
+    </div>
+
+    <script>
+        // Declaración de los elementos de sonido
+		const sonidoFallo = new Audio('sonido-falla.mp3');
+        const sonidoAcierto = new Audio('sonido-correcto.mp3');
+
+
+        const preguntas = [
+            { pregunta: "Juego que todos conocen aunque no sean gamers", respuestas: [{ texto: "Mario Bros", puntos: 35 }, { texto: "Minecraft", puntos: 25 }, { texto: "Fortnite", puntos: 20 }, { texto: "Tetris", puntos: 15 }, { texto: "Pac-Man", puntos: 5 }] },
+            { pregunta: "Algo que enoja online", respuestas: [{ texto: "Lag", puntos: 35 }, { texto: "Hackers", puntos: 25 }, { texto: "Campers", puntos: 15 }, { texto: "Trolls", puntos: 15 }, { texto: "Perder rank", puntos: 10 }] },
+            { pregunta: "Juego famoso de Nintendo", respuestas: [{ texto: "Mario", puntos: 40 }, { texto: "Zelda", puntos: 25 }, { texto: "Pokémon", puntos: 20 }, { texto: "Donkey Kong", puntos: 10 }, { texto: "Smash Bros", puntos: 5 }] },
+            { pregunta: "Villano icónico", respuestas: [{ texto: "Bowser", puntos: 30 }, { texto: "Ganondorf", puntos: 25 }, { texto: "Sephiroth", puntos: 20 }, { texto: "Dr. Robotnik", puntos: 15 }, { texto: "M. Bison", puntos: 10 }] },
+            { pregunta: "Personaje femenino reconocido", respuestas: [{ texto: "Lara Croft", puntos: 30 }, { texto: "Samus", puntos: 25 }, { texto: "Chun-Li", puntos: 20 }, { texto: "Jill Valentine", puntos: 15 }, { texto: "Peach", puntos: 10 }] },
+            { pregunta: "Juego donde construyes", respuestas: [{ texto: "Minecraft", puntos: 40 }, { texto: "Fortnite", puntos: 25 }, { texto: "Roblox", puntos: 20 }, { texto: "The Sims", puntos: 10 }, { texto: "Terraria", puntos: 5 }] },
+            { pregunta: "Algo que dice un tóxico", respuestas: [{ texto: "Noob", puntos: 30 }, { texto: "Tu team apesta", puntos: 25 }, { texto: "Uninstall", puntos: 20 }, { texto: "EZ", puntos: 15 }, { texto: "Insultos", puntos: 10 }] },
+            { pregunta: "Ítem clásico de Mario", respuestas: [{ texto: "Champiñón", puntos: 35 }, { texto: "Estrella", puntos: 25 }, { texto: "Flor de fuego", puntos: 20 }, { texto: "Caparazón", puntos: 10 }, { texto: "Moneda", puntos: 10 }] },
+            { pregunta: "Juego de peleas", respuestas: [{ texto: "Street Fighter", puntos: 35 }, { texto: "Mortal Kombat", puntos: 25 }, { texto: "Tekken", puntos: 20 }, { texto: "Smash Bros", puntos: 10 }, { texto: "King of Fighters", puntos: 10 }] },
+            { pregunta: "Streamer famoso", respuestas: [{ texto: "Ninja", puntos: 30 }, { texto: "Ibai", puntos: 25 }, { texto: "AuronPlay", puntos: 20 }, { texto: "Rubius", puntos: 15 }, { texto: "Pokimane", puntos: 10 }] },
+            { pregunta: "Algo que nunca falta en el chat de un streamer", respuestas: [{ texto: "Emojis", puntos: 35 }, { texto: "Hola o saludos", puntos: 25 }, { texto: "Spam", puntos: 20 }, { texto: "Preguntas random", puntos: 10 }, { texto: "Trolls", puntos: 10 }] },
+            { pregunta: "Una alerta que hace feliz a un streamer", respuestas: [{ texto: "Nueva suscripción", puntos: 40 }, { texto: "Donación", puntos: 30 }, { texto: "Follow", puntos: 20 }, { texto: "Raid", puntos: 10 }] },
+            { pregunta: "Algo que puede arruinar un stream", respuestas: [{ texto: "El internet se cae", puntos: 40 }, { texto: "PC se traba", puntos: 25 }, { texto: "Trolls en el chat", puntos: 20 }, { texto: "Fallo de audio", puntos: 15 }] },
+            { pregunta: "Una plataforma de streaming famosa", respuestas: [{ texto: "Twitch", puntos: 45 }, { texto: "YouTube", puntos: 30 }, { texto: "Facebook Gaming", puntos: 15 }, { texto: "Kick", puntos: 10 }] },
+            { pregunta: "Un juego que casi todos los streamers han jugado en vivo", respuestas: [{ texto: "Minecraft", puntos: 40 }, { texto: "Fortnite", puntos: 25 }, { texto: "Among Us", puntos: 20 }, { texto: "Fall Guys", puntos: 15 }] },
+            { pregunta: "Algo que los viewers suelen spamear en el chat", respuestas: [{ texto: "Emotes", puntos: 40 }, { texto: "F", puntos: 30 }, { texto: "GG", puntos: 20 }, { texto: "Copypastas", puntos: 10 }] },
+            { pregunta: "Un accesorio esencial para hacer stream", respuestas: [{ texto: "Micrófono", puntos: 35 }, { texto: "Cámara", puntos: 25 }, { texto: "Audífonos", puntos: 20 }, { texto: "Luces", puntos: 20 }] },
+            { pregunta: "Algo que suele distraer a un streamer en medio de transmisión", respuestas: [{ texto: "Chat", puntos: 30 }, { texto: "Notificaciones", puntos: 25 }, { texto: "Mascotas/familia", puntos: 25 }, { texto: "Celular", puntos: 20 }] },
+            { pregunta: "Una razón por la que alguien dona o da suscripción", respuestas: [{ texto: "Apoyar al streamer", puntos: 40 }, { texto: "Acceder a emotes", puntos: 25 }, { texto: "Salir en pantalla", puntos: 20 }, { texto: "Participar en sorteos", puntos: 15 }] },
+            { pregunta: "Algo que hace que un stream sea divertido", respuestas: [{ texto: "El chat", puntos: 35 }, { texto: "Retos/juegos", puntos: 25 }, { texto: "Personalidad del streamer", puntos: 25 }, { texto: "Invitados", puntos: 15 }] },
+            { pregunta: "Un problema técnico común en los streams", respuestas: [{ texto: "Audio bajo/malo", puntos: 30 }, { texto: "Lags", puntos: 30 }, { texto: "Cámara congelada", puntos: 20 }, { texto: "OBS fallando", puntos: 20 }] },
+            { pregunta: "Una categoría que siempre tiene muchos viewers en Twitch", respuestas: [{ texto: "Just Chatting", puntos: 40 }, { texto: "Minecraft", puntos: 25 }, { texto: "Fortnite", puntos: 20 }, { texto: "GTA V RP", puntos: 15 }] },
+            { pregunta: "Algo que un streamer suele decir al terminar directo", respuestas: [{ texto: "Gracias por venir", puntos: 40 }, { texto: "Hasta mañana", puntos: 25 }, { texto: "Síganme", puntos: 20 }, { texto: "Los quiero", puntos: 15 }] },
+            { pregunta: "Algo que los viewers odian en un stream", respuestas: [{ texto: "Mucho lag", puntos: 40 }, { texto: "Silencio incómodo", puntos: 25 }, { texto: "Mala calidad de imagen", puntos: 20 }, { texto: "Stream muy corto", puntos: 15 }] },
+            { pregunta: "Un overlay o elemento visual típico de un stream", respuestas: [{ texto: "Alertas", puntos: 35 }, { texto: "Chat en pantalla", puntos: 25 }, { texto: "Marco de cámara", puntos: 20 }, { texto: "Contadores", puntos: 20 }] },
+            { pregunta: "Algo que un mod (moderador) hace en un chat", respuestas: [{ texto: "Banear trolls", puntos: 40 }, { texto: "Poner comandos", puntos: 25 }, { texto: "Dar la bienvenida", puntos: 20 }, { texto: "Eliminar spam", puntos: 15 }] },
+            { pregunta: "Una forma en la que los viewers muestran apoyo a su streamer", respuestas: [{ texto: "Suscribiéndose", puntos: 40 }, { texto: "Donando", puntos: 25 }, { texto: "Compartiendo el canal", puntos: 20 }, { texto: "Participando en chat", puntos: 15 }] },
+            { pregunta: "Un tipo de contenido que suele ser tendencia en streaming", respuestas: [{ texto: "Reacciones", puntos: 30 }, { texto: "Just Chatting", puntos: 25 }, { texto: "Retos/juegos virales", puntos: 25 }, { texto: "Colaboraciones", puntos: 20 }] },
+            { pregunta: "Algo que un streamer suele celebrar con su comunidad", respuestas: [{ texto: "Cumpleaños", puntos: 35 }, { texto: "Aniversario de canal", puntos: 25 }, { texto: "Meta de subs", puntos: 25 }, { texto: "Nuevo juego", puntos: 15 }] },
+            { pregunta: "Un sonido típico en las alertas de Twitch", respuestas: [{ texto: "Campanita", puntos: 35 }, { texto: "Pling electrónico", puntos: 25 }, { texto: "Música corta", puntos: 20 }, { texto: "Voz grabada", puntos: 20 }] },
+            { pregunta: "Algo que coleccionan gamers", respuestas: [{ texto: "Figuras", puntos: 30 }, { texto: "Consolas", puntos: 25 }, { texto: "Juegos físicos", puntos: 20 }, { texto: "Skins", puntos: 15 }, { texto: "Pósters", puntos: 10 }] },
+            { pregunta: "Personaje Street Fighter", respuestas: [{ texto: "Ryu", puntos: 30 }, { texto: "Ken", puntos: 25 }, { texto: "Chun-Li", puntos: 20 }, { texto: "Guile", puntos: 15 }, { texto: "Akuma", puntos: 10 }] },
+            { pregunta: "Juego para bailar", respuestas: [{ texto: "Just Dance", puntos: 30 }, { texto: "Dance Dance Revolution", puntos: 25 }, { texto: "Fortnite", puntos: 20 }, { texto: "Beat Saber", puntos: 15 }, { texto: "Pump It Up", puntos: 10 }] },
+            { pregunta: "Lo que hacen los hackers", respuestas: [{ texto: "Aimbot", puntos: 30 }, { texto: "Wallhack", puntos: 25 }, { texto: "Duplicar objetos", puntos: 20 }, { texto: "Teletransportarse", puntos: 15 }, { texto: "Invencibilidad", puntos: 10 }] },
+            { pregunta: "Saga de terror japonesa", respuestas: [{ texto: "Resident Evil", puntos: 30 }, { texto: "Silent Hill", puntos: 25 }, { texto: "Fatal Frame", puntos: 20 }, { texto: "Siren", puntos: 15 }, { texto: "Parasite Eve", puntos: 10 }] },
+            { pregunta: "Juego con cocina", respuestas: [{ texto: "Cooking Mama", puntos: 30 }, { texto: "Overcooked", puntos: 25 }, { texto: "Zelda BOTW", puntos: 20 }, { texto: "Stardew Valley", puntos: 15 }, { texto: "The Sims", puntos: 10 }] },
+            { pregunta: "Algo que dicen tryhards", respuestas: [{ texto: "1v1", puntos: 30 }, { texto: "Git gud", puntos: 25 }, { texto: "EZ", puntos: 20 }, { texto: "Meta", puntos: 15 }, { texto: "Full focus", puntos: 10 }] },
+            { pregunta: "Modo de juego común", respuestas: [{ texto: "Historia", puntos: 30 }, { texto: "Online", puntos: 25 }, { texto: "Ranked", puntos: 20 }, { texto: "Cooperativo", puntos: 15 }, { texto: "Arcade", puntos: 10 }] },
+            { pregunta: "Algo para comunicarse", respuestas: [{ texto: "Discord", puntos: 30 }, { texto: "Chat de voz", puntos: 25 }, { texto: "Micrófono", puntos: 20 }, { texto: "WhatsApp", puntos: 15 }, { texto: "Chat in-game", puntos: 10 }] },
+            { pregunta: "Ítem Pokémon", respuestas: [{ texto: "Pokebola", puntos: 30 }, { texto: "Poción", puntos: 25 }, { texto: "Baya", puntos: 20 }, { texto: "MT", puntos: 15 }, { texto: "Revivir", puntos: 10 }] },
+            { pregunta: "Algo que papás no entienden", respuestas: [{ texto: "Lo importante de los ranks", puntos: 30 }, { texto: "Microtransacciones", puntos: 25 }, { texto: "Twitch", puntos: 20 }, { texto: "Mods", puntos: 15 }, { texto: "Por qué gritas jugando", puntos: 10 }] },
+            { pregunta: "Saga con música épica", respuestas: [{ texto: "Final Fantasy", puntos: 30 }, { texto: "Zelda", puntos: 25 }, { texto: "Halo", puntos: 20 }, { texto: "Kingdom Hearts", puntos: 15 }, { texto: "Elder Scrolls", puntos: 10 }] },
+            { pregunta: "Personaje Final Fantasy", respuestas: [{ texto: "Cloud", puntos: 30 }, { texto: "Sephiroth", puntos: 25 }, { texto: "Tidus", puntos: 20 }, { texto: "Squall", puntos: 15 }, { texto: "Aerith", puntos: 10 }] },
+            { pregunta: "Algo que sube de nivel", respuestas: [{ texto: "Personaje", puntos: 30 }, { texto: "Armas", puntos: 25 }, { texto: "Habilidades", puntos: 20 }, { texto: "Cuenta", puntos: 15 }, { texto: "Mascota", puntos: 10 }] },
+            { pregunta: "Arma legendaria", respuestas: [{ texto: "Espada Maestra (Zelda)", puntos: 30 }, { texto: "BFG", puntos: 25 }, { texto: "Excalibur", puntos: 20 }, { texto: "Keyblade", puntos: 15 }, { texto: "Lancer Gears", puntos: 10 }] },
+            { pregunta: "Consola que ya no existe", respuestas: [{ texto: "Dreamcast", puntos: 30 }, { texto: "Atari", puntos: 25 }, { texto: "Virtual Boy", puntos: 20 }, { texto: "Sega Saturn", puntos: 15 }, { texto: "Wii U", puntos: 10 }] },
+            { pregunta: "Algo que enoja casuales", respuestas: [{ texto: "Que les ganen fácil", puntos: 30 }, { texto: "Perder progreso", puntos: 25 }, { texto: "Mucho tutorial", puntos: 20 }, { texto: "Bugs", puntos: 15 }, { texto: "Tóxicos", puntos: 10 }] },
+            { pregunta: "Mapa icónico shooter", respuestas: [{ texto: "Dust 2 (CS)", puntos: 30 }, { texto: "Nuketown (COD)", puntos: 25 }, { texto: "Inferno", puntos: 20 }, { texto: "Mirage", puntos: 15 }, { texto: "Blood Gulch (Halo)", puntos: 10 }] },
+            { pregunta: "Personaje Smash Bros.", respuestas: [{ texto: "Mario", puntos: 30 }, { texto: "Link", puntos: 25 }, { texto: "Pikachu", puntos: 20 }, { texto: "Kirby", puntos: 15 }, { texto: "Donkey Kong", puntos: 10 }] },
+            { pregunta: "Logro gamer", respuestas: [{ texto: "Platino", puntos: 30 }, { texto: "Speedrun", puntos: 25 }, { texto: "Rango alto", puntos: 20 }, { texto: "100% completado", puntos: 15 }, { texto: "Récord mundial", puntos: 10 }] },
+            { pregunta: "Algo que brilla", respuestas: [{ texto: "Diamantes", puntos: 30 }, { texto: "Cofres", puntos: 25 }, { texto: "Orbes", puntos: 20 }, { texto: "Armas legendarias", puntos: 15 }, { texto: "Estrellas", puntos: 10 }] },
+            { pregunta: "Consola PlayStation", respuestas: [{ texto: "PS1", puntos: 30 }, { texto: "PS2", puntos: 25 }, { texto: "PS3", puntos: 20 }, { texto: "PS4", puntos: 15 }, { texto: "PS5", puntos: 10 }] },
+            { pregunta: "Objeto Zelda", respuestas: [{ texto: "Ocarina", puntos: 30 }, { texto: "Espada Maestra", puntos: 25 }, { texto: "Escudo Hyliano", puntos: 20 }, { texto: "Bumerán", puntos: 15 }, { texto: "Bombas", puntos: 10 }] },
+            { pregunta: "Algo que nunca quieren perder", respuestas: [{ texto: "Progreso", puntos: 30 }, { texto: "Partidas rank", puntos: 25 }, { texto: "Vidas", puntos: 20 }, { texto: "Ítems raros", puntos: 15 }, { texto: "Streak", puntos: 10 }] },
+            { pregunta: "Juego VR", respuestas: [{ texto: "Beat Saber", puntos: 30 }, { texto: "Half-Life Alyx", puntos: 25 }, { texto: "VRChat", puntos: 20 }, { texto: "Resident Evil 7", puntos: 15 }, { texto: "Superhot VR", puntos: 10 }] },
+            { pregunta: "Streamer mujer", respuestas: [{ texto: "Pokimane", puntos: 30 }, { texto: "Valkyrae", puntos: 25 }, { texto: "Arigameplays", puntos: 20 }, { texto: "Amouranth", puntos: 15 }, { texto: "NixiePixie", puntos: 10 }] },
+            { pregunta: "Indie famoso", respuestas: [{ texto: "Hollow Knight", puntos: 30 }, { texto: "Undertale", puntos: 25 }, { texto: "Stardew Valley", puntos: 20 }, { texto: "Cuphead", puntos: 15 }, { texto: "Hades", puntos: 10 }] },
+            { pregunta: "Frase motivadora in-game", respuestas: [{ texto: "You can do it!", puntos: 30 }, { texto: "Press F to pay respects", puntos: 25 }, { texto: "Keep fighting!", puntos: 20 }, { texto: "Victory!", puntos: 15 }, { texto: "Let’s go!", puntos: 10 }] },
+            { pregunta: "Final recordado", respuestas: [{ texto: "The Last of Us", puntos: 30 }, { texto: "Red Dead Redemption", puntos: 25 }, { texto: "Final Fantasy VII", puntos: 20 }, { texto: "Halo 3", puntos: 15 }, { texto: "Bioshock", puntos: 10 }] },
+            { pregunta: "Menú de juegos", respuestas: [{ texto: "Nueva partida", puntos: 30 }, { texto: "Continuar", puntos: 25 }, { texto: "Opciones", puntos: 20 }, { texto: "Multijugador", puntos: 15 }, { texto: "Créditos", puntos: 10 }] },
+            { pregunta: "Remake esperado", respuestas: [{ texto: "GTA VI (casi remake espiritual)", puntos: 30 }, { texto: "Final Fantasy VII", puntos: 25 }, { texto: "Zelda Ocarina", puntos: 20 }, { texto: "Pokémon", puntos: 15 }, { texto: "Metal Gear", puntos: 10 }] },
+            { pregunta: "Saga Capcom", respuestas: [{ texto: "Resident Evil", puntos: 30 }, { texto: "Street Fighter", puntos: 25 }, { texto: "Monster Hunter", puntos: 20 }, { texto: "Devil May Cry", puntos: 15 }, { texto: "Mega Man", puntos: 10 }] },
+            { pregunta: "Héroe Overwatch", respuestas: [{ texto: "Tracer", puntos: 30 }, { texto: "D.Va", puntos: 25 }, { texto: "Genji", puntos: 20 }, { texto: "Reinhardt", puntos: 15 }, { texto: "Mercy", puntos: 10 }] },
+            { pregunta: "Algo que haces en GTA", respuestas: [{ texto: "Robar autos", puntos: 30 }, { texto: "Disparar", puntos: 25 }, { texto: "Conducir", puntos: 20 }, { texto: "Huir de policía", puntos: 15 }, { texto: "Misiones", puntos: 10 }] },
+            { pregunta: "Juego basado en película", respuestas: [{ texto: "Spider-Man", puntos: 30 }, { texto: "Star Wars", puntos: 25 }, { texto: "Harry Potter", puntos: 20 }, { texto: "Lord of the Rings", puntos: 15 }, { texto: "Batman", puntos: 10 }] },
+            { pregunta: "Algo que odian pagar", respuestas: [{ texto: "DLC", puntos: 30 }, { texto: "Skins", puntos: 25 }, { texto: "Pases de batalla", puntos: 20 }, { texto: "Online", puntos: 15 }, { texto: "Loot boxes", puntos: 10 }] },
+            { pregunta: "Consola Xbox", respuestas: [{ texto: "Xbox", puntos: 30 }, { texto: "360", puntos: 25 }, { texto: "One", puntos: 20 }, { texto: "Series S", puntos: 15 }, { texto: "Series X", puntos: 10 }] },
+            { pregunta: "Personaje Among Us", respuestas: [{ texto: "Tripulante", puntos: 30 }, { texto: "Impostor", puntos: 25 }, { texto: "Rojo", puntos: 20 }, { texto: "Azul", puntos: 15 }, { texto: "Amarillo", puntos: 10 }] },
+            { pregunta: "Algo en un torneo", respuestas: [{ texto: "Trofeo", puntos: 30 }, { texto: "Comentaristas", puntos: 25 }, { texto: "Público", puntos: 20 }, { texto: "Bracket", puntos: 15 }, { texto: "Premios", puntos: 10 }] },
+            { pregunta: "Frase de NPC inolvidable", respuestas: [{ texto: "Hey! Listen!", puntos: 30 }, { texto: "It’s dangerous to go alone!", puntos: 25 }, { texto: "Do a barrel roll!", puntos: 20 }, { texto: "Thank you Mario!", puntos: 15 }, { texto: "War never changes.", puntos: 10 }] }
+        ];
+        
+        let indicePreguntaActual = 0;
+        let fallos = 0;
+        const maxFallos = 3;
+
+        const gameContainerEl = document.getElementById('game-container');
+        const preguntaEl = document.getElementById('pregunta');
+        const respuestasContainerEl = document.getElementById('respuestas-container');
+        const fallosEl = document.getElementById('fallos');
+        const botonFalloEl = document.getElementById('boton-fallo');
+        const botonSiguienteEl = document.getElementById('boton-siguiente');
+
+        function cargarPregunta() {
+            if (indicePreguntaActual >= preguntas.length) {
+                preguntaEl.textContent = "¡Fin del juego!";
+                respuestasContainerEl.innerHTML = '';
+                botonFalloEl.style.display = 'none';
+                botonSiguienteEl.style.display = 'none';
+                return;
+            }
+
+            const preguntaActual = preguntas[indicePreguntaActual];
+            preguntaEl.textContent = preguntaActual.pregunta;
+            respuestasContainerEl.innerHTML = '';
+            fallos = 0;
+            fallosEl.innerHTML = '';
+
+            preguntaActual.respuestas.forEach((respuesta, index) => {
+                const respuestaEl = document.createElement('div');
+                respuestaEl.classList.add('respuesta');
+                
+                respuestaEl.innerHTML = `
+                    <div class="contenido-tapa">
+                        <span>Respuesta ${index + 1}</span>
+                        <span>Puntos</span>
+                    </div>
+                    <div class="contenido-visible">
+                        <span>${respuesta.texto}</span>
+                        <span>${respuesta.puntos}</span>
+                    </div>
+                `;
+                
+                respuestaEl.addEventListener('click', () => {
+                    mostrarRespuesta(respuestaEl);
+                    sonidoAcierto.play(); // Reproduce el sonido de acierto
+                });
+
+                respuestasContainerEl.appendChild(respuestaEl);
+            });
+        }
+
+        function mostrarRespuesta(elemento) {
+            elemento.classList.add('visible');
+            elemento.style.pointerEvents = 'none';
+        }
+
+        function marcarFallo() {
+            if (fallos === maxFallos) {
+                fallos = 0;
+                fallosEl.innerHTML = '';
+            }
+
+            fallos++;
+            const xEl = document.createElement('span');
+            xEl.classList.add('fallo');
+            xEl.textContent = 'X';
+            fallosEl.appendChild(xEl);
+            
+            sonidoFallo.play(); // Reproduce el sonido de fallo
+        }
+
+        function siguientePregunta() {
+            gameContainerEl.classList.add('fade-out');
+            
+            setTimeout(() => {
+                indicePreguntaActual++;
+                cargarPregunta();
+                
+                gameContainerEl.classList.remove('fade-out');
+                gameContainerEl.classList.add('fade-in');
+
+                setTimeout(() => {
+                    gameContainerEl.classList.remove('fade-in');
+                }, 500);
+            }, 500);
+        }
+
+        botonFalloEl.addEventListener('click', marcarFallo);
+        botonSiguienteEl.addEventListener('click', siguientePregunta);
+
+        cargarPregunta();
+    </script>
+</body>
+</html>
