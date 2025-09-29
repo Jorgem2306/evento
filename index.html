@@ -223,10 +223,17 @@
     </div>
 
     <script>
-        // Declaración de los elementos de sonido
-		const sonidoFallo = new Audio('sonido-falla.mp3');
         const sonidoAcierto = new Audio('sonido-correcto.mp3');
+        const sonidoFallo = new Audio('sonido-falla.mp3');
+        
+        // Ajusta el volumen una vez que el audio esté listo para reproducirse
+        sonidoAcierto.addEventListener('canplaythrough', function() {
+            this.volume = 0.3; // Ajusta el volumen del sonido de acierto a 50%
+        });
 
+        sonidoFallo.addEventListener('canplaythrough', function() {
+            this.volume = 0.2; // Ajusta el volumen del sonido de fallo a 50%
+        });
 
         const preguntas = [
             { pregunta: "Juego que todos conocen aunque no sean gamers", respuestas: [{ texto: "Mario Bros", puntos: 35 }, { texto: "Minecraft", puntos: 25 }, { texto: "Fortnite", puntos: 20 }, { texto: "Tetris", puntos: 15 }, { texto: "Pac-Man", puntos: 5 }] },
