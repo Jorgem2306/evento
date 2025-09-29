@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+
     <title>100 Gamers Dijeron</title>
     <style>
         /* COLORES CON TEMA ROSADO/MORADO */
@@ -211,7 +211,7 @@
         </div>
 
         <div class="fallos-container">
-            <h2>Fallos:</h2>
+            <h2 id="fallos-titulo">Fallos:</h2>
             <div id="fallos">
             </div>
         </div>
@@ -223,6 +223,7 @@
     </div>
 
     <script>
+        // Declaración de los elementos de sonido
         const sonidoAcierto = new Audio('sonido-correcto.mp3');
         const sonidoFallo = new Audio('sonido-falla.mp3');
         
@@ -315,6 +316,7 @@
         const gameContainerEl = document.getElementById('game-container');
         const preguntaEl = document.getElementById('pregunta');
         const respuestasContainerEl = document.getElementById('respuestas-container');
+        const fallosTituloEl = document.getElementById('fallos-titulo');
         const fallosEl = document.getElementById('fallos');
         const botonFalloEl = document.getElementById('boton-fallo');
         const botonSiguienteEl = document.getElementById('boton-siguiente');
@@ -325,6 +327,7 @@
                 respuestasContainerEl.innerHTML = '';
                 botonFalloEl.style.display = 'none';
                 botonSiguienteEl.style.display = 'none';
+                fallosTituloEl.style.display = 'none'; // Oculta el título de fallos al final del juego
                 return;
             }
 
@@ -333,6 +336,7 @@
             respuestasContainerEl.innerHTML = '';
             fallos = 0;
             fallosEl.innerHTML = '';
+            fallosTituloEl.style.display = 'block'; // Asegura que el título de fallos sea visible para las preguntas
 
             preguntaActual.respuestas.forEach((respuesta, index) => {
                 const respuestaEl = document.createElement('div');
@@ -341,7 +345,6 @@
                 respuestaEl.innerHTML = `
                     <div class="contenido-tapa">
                         <span>Respuesta ${index + 1}</span>
-                        <span>Puntos</span>
                     </div>
                     <div class="contenido-visible">
                         <span>${respuesta.texto}</span>
@@ -364,7 +367,8 @@
         }
 
         function marcarFallo() {
-            if (fallos === maxFallos) {
+            if (fallos >= maxFallos) {
+                // Si ya hay 3 fallos, resetea el contador y el display
                 fallos = 0;
                 fallosEl.innerHTML = '';
             }
@@ -375,7 +379,8 @@
             xEl.textContent = 'X';
             fallosEl.appendChild(xEl);
             
-            sonidoFallo.play(); // Reproduce el sonido de fallo
+            // Reproduce el sonido de fallo de forma segura
+            sonidoFallo.play().catch(e => console.log("Fallo al reproducir el sonido:", e)); 
         }
 
         function siguientePregunta() {
